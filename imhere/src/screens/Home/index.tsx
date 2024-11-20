@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import {
   Text,
   View,
@@ -9,31 +11,30 @@ import {
 import { styles } from './styles'
 import { Participant } from '../../components/Participant';
 
+const initialParticipants = [
+  'Vitória',
+  'Danilo'
+]
+
 export default function Home() {
-  const participants = [
-    'Vitória',
-    'Danilo',
-    'Leila',
-    'Marcos',
-    'Maria',
-    'Jair',
-    'Benedita',
-    'Leandro'
-  ]
+  const [participantList, setParticipantList] = useState<string[]>(initialParticipants)
+  const [participantName, setParticipantName] = useState("")
 
   const hadleParticipantAdd = () => {
-    if (participants.includes("Vitória")) {
-      return Alert.alert("Participante existente", "Esse participante já foi cadastrado")
+    if (participantList.includes(participantName)) {
+      return Alert.alert("Participante existente", `${participantName}`)
     }
 
     Alert.alert("Adicionado", "Bem-vindo")
+    setParticipantList(prevState => [...prevState, participantName])
+    setParticipantName("")
   }
 
   const handleParticipantRemove = (name: string) => {
     Alert.alert("Remover", `Realmente deseja remover ${name}?`, [
       {
         text: "Sim",
-        onPress: () => Alert.alert("Deletado!"),
+        onPress: () => setParticipantList(prevState => prevState.filter(participant => participant !== name)),
         style: 'destructive'
       },
       {
@@ -50,7 +51,8 @@ export default function Home() {
           placeholder="Digite aqui"
           style={styles.input}
           placeholderTextColor={"#6B6B6B"}
-
+          onChangeText={setParticipantName} // onChangeText={text => setParticipantName(text)}
+          value={participantName}
         />
         <TouchableOpacity onPress={hadleParticipantAdd} style={styles.button}>
           <Text style={styles.buttonText}> + </Text>
@@ -58,7 +60,7 @@ export default function Home() {
       </View>
 
       <FlatList
-        data={participants}
+        data={participantList}
         keyExtractor={item => item}
         renderItem={({ item }) => (
           <Participant
